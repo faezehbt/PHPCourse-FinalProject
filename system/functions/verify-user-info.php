@@ -49,3 +49,16 @@ function verifyEmail(string $email) : bool {
 
 }
 
+
+# PASSWORD
+function verifyPassword(string $pass , string $pass_repeat) : bool {
+    if($pass != $pass_repeat){
+        showAlert("warning" , "رمز عبور با تکرار آن تطابق ندارد.");
+        return false;
+    }
+    else
+        return true;
+
+}
+
+

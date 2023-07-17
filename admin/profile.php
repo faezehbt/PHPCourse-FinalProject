@@ -69,16 +69,10 @@ if (isset($_POST['submitted'])) {
     
         
     if(!$error_flag){ // اگر هیچ خطایی وجود نداشته باشد اطلاعات در دیتابیس و عکس در سیستم ذخیره می شوند
-        $query = $conn->prepare("UPDATE `userinfo` SET `username`=:username  ,`email`= :email ,`mobile`= :mobile 
-                                    WHERE `id` = :id");
-
-        $query->bindParam('username', $username, PDO::PARAM_STR_CHAR);
-        $query->bindParam('email', $email, PDO::PARAM_STR_CHAR);
-        $query->bindParam('mobile', $mobile);
-        $query->bindParam('id', $account_id, PDO::PARAM_INT);
-
-
-        if (!$query->execute())
+        $query = $conn->prepare("UPDATE `userinfo` SET `username`=?  ,`email`= ? ,`mobile`= ? 
+                                    WHERE `id` = ?");
+        
+        if (!$query->execute([$username , $email, $mobile, $account_id]))
             die("Unexpected Error 347682798: با پشتیبانی تماس بگیرید");
         
         showAlert("success" , "اطلاعات کاربر {$username} با موفقیت ویرایش شد.");

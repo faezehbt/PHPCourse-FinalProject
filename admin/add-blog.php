@@ -6,10 +6,12 @@ require_once '../system/db-connect.php';
 require_once '../template/admin-header.php';
 require_once '../template/admin-nav.php';
 require_once '../system/functions/authentication.php';
+require_once '../system/functions/verify-blog-info.php';
 
 
-#
-checkRole(['Admin' , 'Writer' , 'Editor' , 'Clerk']);
+# Which Roles can enter this page
+checkRole(['manager','editor','writer']);
+
 
 
 
@@ -22,46 +24,31 @@ $ref = intval(@$_REQUEST['ref']);
 
 // var_dump($_POST);
 
+// اعتبارسنجی  Validation
+ #   title
+ $error_flag = !verifyTitle($blog['title'], $id);
 
 
 if (isset($_POST['submitted'])) {
 
 
-    $user['username'] = @$_POST['username'];
-    $user['email'] = @$_POST['email'];
-    $user['password'] = md5(@$_POST['password']);
-    $user['mobile'] = @$_POST['mobile'];
+    $blog['title'] = @$_POST['blog-title'];
+    $blog['description'] = @$_POST['blog-description'];
+    $blog['body'] = @$_POST['blog-body'];
 
-// اعتبارسنجی  Validation
-#   id
-    if($id < 0) die(showAlert("danger" , "Unexpected Error 553254545313, \n با پشتیبانی تماس بگیرید."));
-
-#   username
-    $error_flag = !verifyUsername($user['username'] , 0);
-    
-#   email
-    if($user['email'])      $error_flag = $error_flag || !verifyEmail($user['email']);
-
-
-#   mobile 
-    if($user['mobile'])      $error_flag = $error_flag || !verifyMobile($user['mobile']);
-
-
-    
+    $error_flag = 0;
     if(!$error_flag) {   // اگر همه فیلدها درست پر شده باشند 
 
-        $query = $conn->prepare("INSERT INTO `userinfo`(`username`, `password`, `email`, `mobile`) 
-                VALUE (:username,:pass,:email,:mobile )");
-            $query->bindParam('username', $user['username'], PDO::PARAM_STR_CHAR);
-            $query->bindParam('pass', $user['password'], PDO::PARAM_STR_CHAR);
-            $query->bindParam('email', $user['email'], PDO::PARAM_STR_CHAR);
-            $query->bindParam('mobile', $user['mobile']);
+        $creationTime = $editingTme = date('Y-n-j h:i:s' , time());
 
+        $query = $conn->prepare("INSERT INTO    `bloginfo`
+                                (`title`, `description`, `body`, `writer_id` ,`create_time`,`update_time`) 
+                                VALUE (?,?,?,?,?,? )");
+        $inputs = [$blog['title'] , $blog['description'] , $blog['body'] , $account['id'] , $creationTime, $editingTme];
+        if (!$query->execute($inputs))
+            die("اضافه کردن بلاگ با مشکل مواجه شد");
 
-            if (!$query->execute())
-                die("اضافه کردن کاربر جدید با مشکل مواجه شد");
-
-            showAlert("success" , "اطلاعات کاربر {$user['username']} با موفقیت ذخیره شد.");
+            showAlert("success" , "بلاگ با عنوان $blog[title] با موفقیت ذخیره شد.");
 
             $id = $conn->lastInsertId();
             $ref++;
@@ -74,7 +61,7 @@ if (isset($_POST['submitted'])) {
 
 // نمایش فرم با اطلاعات کاربر
 
-require_once '../template/user-form.php';
+require_once '../template/blog-form.php';
 
 
 

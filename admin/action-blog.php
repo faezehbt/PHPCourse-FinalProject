@@ -8,8 +8,8 @@ require_once '../template/admin-nav.php';
 require_once '../system/functions/authentication.php';
 
 
-# Only Admin can enter this page
-checkRole(['Admin']);
+# Which Roles can enter this page
+checkRole(['manager','editor','writer']);
 
 
 
@@ -17,5 +17,6 @@ $id = intval(@$_REQUEST['id']);
 $ref = intval(@$_REQUEST['ref']);
 
 
-if($id)     require 'edit-user.php';
-else require 'add-user.php';
+if($id)     require 'edit-blog.php';
+else        require 'add-blog.php';
+    

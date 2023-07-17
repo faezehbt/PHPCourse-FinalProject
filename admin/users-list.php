@@ -12,15 +12,15 @@ require '../template/config.php';
 require '../system/functions/count-table-rows.php';
 
 
-# Only Admins & Clerks can enter this page
-checkRole(['Admin' , 'Clerk']);
+# Which Roles can enter this page
+checkRole(['manager','editor']);
 
 
 
 
 
 $rows_num = CountTableRows($conn, 'userinfo'); //counting db user table rows
-$page_num = ceil($rows_num / ROW_PER_PAGE);   //total page number
+$page_num = ceil($rows_num / USER_ROW_PER_PAGE);   //total page number
 
 
 
@@ -30,10 +30,10 @@ $page = @$_GET['page']; //this page number
 if ($page < 1)   $page = 1;
 else if ($page > $page_num)   $page = $page_num;
 
-$start_row = ($page - 1) * ROW_PER_PAGE;
+$start_row = ($page - 1) * USER_ROW_PER_PAGE;
 
 // accessing table rows query
-$res = $conn->prepare("SELECT * FROM " . TABLE_NAME . " LIMIT $start_row, " . ROW_PER_PAGE);
+$res = $conn->prepare("SELECT * FROM `userinfo` WHERE `status`<>'deleted'  LIMIT $start_row, " . USER_ROW_PER_PAGE);
 if (!$res->execute())  die("خواندن اطلاعات کاربران با مشکل مواجه شده");
 
 ?>
@@ -63,21 +63,23 @@ if (!$res->execute())  die("خواندن اطلاعات کاربران با مش
         $i = $start_row + 1; // row num(differs on each page)
 
         while ($user = $res->fetch()) {
-            echo "  <tr>
+            $user['mobile'] = sprintf("%011d" , $user['mobile']);
+            $color = $user['status'] == 'active'?'light':'danger';
+            echo "  <tr class=\"table-$color\">
                         <td>$i</td>
                         <td>$user[id]</td>
                         <td>{$user['username']}</td>
-                        <td>0{$user['mobile']}</td>
+                        <td>{$user['mobile']}</td>
                         <td>{$user['email']}</td>
                         <td>{$user['role']}</td>
                         <td>
                             <div class='dropdown'>
-                                <button class='btn btn-secondary dropdown-toggle' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
+                                <button class='btn btn-secondary dropdown-toggle' type='button' id='dropdownMenuButton' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
                                 عملیات
                                 </button>
                                 <div class='dropdown-menu' aria-labelledby='dropdownMenuButton'>
                                     <a class=' dropdown-item' href='edit-user.php?ref=$page&id=$user[id]'>ویرایش</a>
-                                    <a class=' dropdown-item' href='delete-user.php?ref=$page&id=$user[id]'>حذف</a>
+                                    <a class=' dropdown-item link-danger' href='delete-user.php?ref=$page&id=$user[id]'>حذف</a>
                                 </div>
                             </div>
                         </td>

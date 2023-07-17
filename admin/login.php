@@ -2,35 +2,36 @@
 
 require_once '../system/db-connect.php';
 require_once '../template/admin-header.php';
- 
+
+var_dump($_POST);
 
 if (isset($_POST['username'])) {    //  درصورتی که کاربر تلاشی برای ورود کرده باشد
     $username = $_POST['username'];
     $password = md5($_POST['password']);
+    
 
     $query = $conn->prepare("SELECT `id` FROM `userinfo` WHERE `username` = ? AND `password` = ? LIMIT 1");
-    if (!$query->execute([$username , $password]))      
+    if (!$query->execute([$username, $password]))
         die(showAlert('danger', 'درخواست شما با مشکل مواجه شد'));
-    
-    if($account = $query->fetch()){    //  کاربر با موفقیت وارد شد
+
+    if ($account = $query->fetch()) {    //  کاربر با موفقیت وارد شد
         session_start();
         $_SESSION['account-id'] = $account['id'];
+        die();
         header('Location: index.php');
         exit("  <div>
                     <p class='text-center'>لطفا کمی منتظر بمانید...</p>
-                </div>");            
+                </div>");
+    } else {   // نام کاربری یا رمزعبور اشتباه است و یا وجود ندارد
+        showAlert('danger', 'نام کاربری یا رمز عبور اشتباه است.');
     }
-    else{   // نام کاربری یا رمزعبور اشتباه است و یا وجود ندارد
-        showAlert('danger','نام کاربری یا رمز عبور اشتباه است.');
-    }
-    
 }
 
-if(isset($_GET['logout'])){
+if (isset($_GET['logout'])) {
     session_start();
     $username = $account['username'];
     session_destroy();
-    showAlert('success',".کاربر $username با موفقیت خارج شدید");
+    showAlert('success', ".کاربر $username با موفقیت خارج شدید");
 }
 
 
@@ -50,8 +51,8 @@ if(isset($_GET['logout'])){
         </div>
         <div class="m-2">
             <button type="submit" class="btn btn-primary">ورود</button>
-            <a class="btn btn-outline-primary" href="">ثبت نام</a>
-            <a class="link-primary" style="text-decoration:underline" href="">فراموشی رمز عبور</a>    
+            <a class="btn btn-outline-primary" href="sign-up.php">ثبت نام</a>
+            <a class="link-primary" style="text-decoration:underline" href="/project/admin/forgot-pass.php">فراموشی رمز عبور</a>
         </div>
 
     </form>
@@ -61,4 +62,3 @@ if(isset($_GET['logout'])){
 <?php
 
 require_once '../template/admin-footer.php';
-?>

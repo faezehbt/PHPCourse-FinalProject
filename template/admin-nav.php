@@ -21,20 +21,32 @@ $photoName = namePhoto($account_id);
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav ml-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link <?= $page_name == 'dashboard' ? 'active' : '' ?>" aria-current="page" href="../admin/index.php">
+                    <a class="nav-link <?=$page_name=='dashboard'?'active':''?>" aria-current="page" href="/project/admin/index.php">
                         داشبورد
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link <?= $page_name == 'blogs' ? 'active' : '' ?>" aria-current="page" href="../admin/blogs-list.php">
-                        بلاگ ها
+                    <a class="nav-link" aria-current="page" href="/project/blog">
+                        مطالب
                     </a>
                 </li>
-                <? if ($account['role'] == 'Admin') : ?>
-                    <li class="nav-item">
-                        <a class="nav-link <?= ($page_name == 'users') ? 'active' : '' ?>" aria-current="page" href="../admin/users-list.php">
-                            کاربران
+                <? if ($account['role'] == 'manager') : ?>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle <?=in_array($page_name,['blogs','users'])?'active':''?>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            لیست
                         </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item <?=$page_name=='blogs'?'active':''?>" href="../admin/blogs-list.php">
+                                    بلاگ ها
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item <?=($page_name=='users')?'active':''?>" href="../admin/users-list.php">
+                                    کاربران 
+                                </a>
+                            </li>
+                        </ul>
                     </li>
                 <? endif; ?>
             </ul>
@@ -46,19 +58,17 @@ $photoName = namePhoto($account_id);
                     <img src="/project/assets/uploads/profile-photos/<?= $photoName . '?' . round(1000, 100000) ?>" onerror="this.onerror=null; this.src='/project/assets/uploads/profile-photos/profile.png'" width="40" height="40" class="d-inline-block rounded-circle mx-1" alt="" />
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="link" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <?= $account['username'] ?> خوش آمدی
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                         <a class="dropdown-item <?= $page_name == 'profile' ? 'active' : '' ?>" href="../admin/profile.php">
                             پروفایل من
                         </a>
-                        <a class="dropdown-item" href="#">
+                        <a class="dropdown-item" href="/project/admin/change-pass.php">
                             تغییر رمز عبور
                         </a>
-                        <a class="dropdown-item" href="#">
-                            <hr class="dropdown-divider">
-                        </a>
+                        <hr class="dropdown-divider">
                         <a class="dropdown-item link-danger" href="../admin/login.php?logout=1">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-power" viewBox="0 0 16 16">
                                 <path d="M7.5 1v7h1V1h-1z" />

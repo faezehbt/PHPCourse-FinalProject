@@ -8,8 +8,9 @@ require_once '../template/admin-nav.php';
 require_once '../system/functions/authentication.php';
 
 
-# Only Admin can enter this page
-checkRole(['Admin']);
+# Which Roles can enter this page
+checkRole(['manager','editor']);
+
 
 
 

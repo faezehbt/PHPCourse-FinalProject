@@ -8,8 +8,8 @@ require_once '../template/admin-nav.php';
 require_once '../system/functions/authentication.php';
 
 
-# Only Admin can enter this page
-checkRole(['Admin']);
+# Only manager can enter this page
+checkRole(['manager']);
 
 
 
@@ -82,7 +82,13 @@ if ($id) {      // گرفتن اطلاعات فعلی کاربر برای نما
     $query = $conn->prepare("SELECT * FROM `userinfo` WHERE `id` = ? LIMIT 1");
     if (!$query->execute([$id]))    die(showAlert("danger" , "مشکل در خواندن اطلاعات کاربر موردنظر"));
         
-    $user = $query->fetch();
+
+    if (!$user = $query->fetch()){
+        showAlert("danger" , "کاربر موردنظر وجود ندارد.");
+        echo "<a href='users-list.php?page=".$ref."'>بازگشت</a>";
+        die();
+    }
+
 }
 
 // نمایش فرم با اطلاعات کاربر
